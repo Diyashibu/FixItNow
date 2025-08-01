@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Form, File, UploadFile, Depends
 from clients.supabase_client import supabase
 from config.settings import SUPABASE_URL
+from typing import Optional
 import uuid
 import os
 

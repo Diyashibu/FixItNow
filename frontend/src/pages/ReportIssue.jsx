@@ -3,6 +3,7 @@ import { ArrowLeft, Camera, Upload, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './ReportIssue.css';
 import LocationPicker from './LocationPicker';
+import { userStorage } from '../services/api';
 
 const ReportIssue = () => {
   const navigate = useNavigate();
@@ -78,6 +79,13 @@ const ReportIssue = () => {
     data.append('category', category);
     data.append('intensity', intensity.toString());
     data.append('location', location);
+    
+    // Add user_id if user is logged in
+    const currentUser = userStorage.getUser();
+    if (currentUser && currentUser.id) {
+      data.append('user_id', currentUser.id);
+    }
+    
     if (photo) {
       data.append('photo', photo);
     }
@@ -89,15 +97,28 @@ const ReportIssue = () => {
       });
 
       if (res.ok) {
-        alert('Issue reported successfully!');
+        const responseData = await res.json();
+        const message = responseData.photo_uploaded ? 
+          'Issue reported successfully with photo!' : 
+          'Issue reported successfully (photo upload failed, but issue was saved)!';
+        alert(message);
         navigate('/dashboard');
       } else {
         const errorData = await res.json();
-        alert(`Error: ${errorData.detail || 'Failed to report issue'}`);
+        console.error('Server error:', errorData);
+        
+        // Show more specific error messages
+        if (res.status === 413) {
+          alert('Error: Image file is too large. Please choose a smaller image (under 5MB).');
+        } else if (res.status === 400 && errorData.detail?.includes('image')) {
+          alert('Error: Please upload a valid image file (JPG, PNG, etc.).');
+        } else {
+          alert(`Error: ${errorData.detail || 'Failed to report issue'}`);
+        }
       }
     } catch (error) {
       console.error('Error submitting issue:', error);
-      alert('Something went wrong while submitting the issue.');
+      alert('Network error: Please check your internet connection and try again.');
     }
   };
 

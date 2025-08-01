@@ -1,0 +1,8 @@
+nohup: ignoring input
+INFO:     Will watch for changes in these directories: ['/workspace/backend']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [16083] using StatReload
+INFO:     Started server process [16086]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:43316 - "POST /report-issue HTTP/1.1" 500 Internal Server Error
